@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>우리 집 장보기</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Gowun+Dodum&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #fff8f0;
+    --card: #ffffff;
+    --text: #5a4a5e;
+    --muted: #a294a6;
+    --line: #f1e6ee;
+    --accent: #ff8fab;
+    --accent-dark: #f06f92;
+    --shadow: 0 6px 18px rgba(214, 160, 190, .22);
+    --pink: #ffd6e0;
+    --sky: #cfe8ff;
+    --yellow: #fff1b8;
+    --green: #d6f5d6;
+    --purple: #e6dcff;
+    --peach: #ffe0cc;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    background-image: radial-gradient(#ffe3ec 1.2px, transparent 1.2px);
+    background-size: 22px 22px;
+    color: var(--text);
+    font-family: "Gowun Dodum", "Malgun Gothic", sans-serif;
+    font-size: 16px;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 24px 16px 60px; }
+  h1, h2, .btn, .cute { font-family: "Jua", "Malgun Gothic", sans-serif; font-weight: normal; }
+
+  header {
+    background: var(--card);
+    border-radius: 28px;
+    padding: 22px 24px;
+    box-shadow: var(--shadow);
+    text-align: center;
+  }
+  header h1 { margin: 0 0 6px; font-size: 2rem; color: var(--accent-dark); }
+  .progress-text { margin: 0 0 12px; color: var(--muted); }
+  .bar { height: 14px; background: var(--line); border-radius: 99px; overflow: hidden; }
+  .bar > div {
+    height: 100%; width: 0;
+    background: linear-gradient(90deg, #ffb3c6, #ffd59e, #b9f0c0);
+    border-radius: 99px;
+    transition: width .35s ease;
+  }
+
+  form.add {
+    margin-top: 18px;
+    background: var(--card);
+    border-radius: 24px;
+    padding: 16px;
+    box-shadow: var(--shadow);
+    display: grid;
+    grid-template-columns: 2fr 80px 2fr 1.4fr auto;
+    gap: 8px;
+  }
+  form.add input, form.add select {
+    width: 100%;
+    font: inherit;
+    color: var(--text);
+    border: 2px solid var(--line);
+    background: #fffafc;
+    border-radius: 14px;
+    padding: 10px 12px;
+    outline: none;
+    min-width: 0;
+  }
+  form.add input:focus, form.add select:focus { border-color: var(--accent); }
+
+  .btn {
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    border-radius: 14px;
+    padding: 10px 18px;
+    background: var(--accent);
+    color: #fff;
+    box-shadow: 0 3px 0 var(--accent-dark);
+    transition: transform .1s;
+  }
+  .btn:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--accent-dark); }
+
+  .sections { margin-top: 18px; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .section {
+    background: var(--card);
+    border-radius: 24px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .section h2 {
+    margin: 0;
+    padding: 12px 18px;
+    font-size: 1.2rem;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .section h2 small { font-family: "Gowun Dodum", sans-serif; font-size: .85rem; opacity: .7; }
+  .section ul { list-style: none; margin: 0; padding: 6px 10px 12px; }
+  .empty { color: var(--muted); font-size: .9rem; padding: 10px 8px; }
+
+  li.item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 8px;
+    border-radius: 16px;
+    transition: background .2s, opacity .2s;
+  }
+  li.item:hover { background: #fff5f8; }
+  .check {
+    flex: none;
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    border: 2.5px solid #f3b6c8;
+    background: #fff;
+    cursor: pointer;
+    display: grid; place-items: center;
+    color: #fff; font-size: 16px; font-weight: bold;
+    padding: 0;
+  }
+  .check span { transform: scale(0); transition: transform .2s cubic-bezier(.3,1.6,.5,1); }
+  li.done .check { background: var(--accent); border-color: var(--accent); }
+  li.done .check span { transform: scale(1); }
+  .info { flex: 1; min-width: 0; cursor: pointer; }
+  .name { word-break: break-all; }
+  .memo { font-size: .82rem; color: var(--muted); word-break: break-all; }
+  li.done .info { opacity: .45; }
+  li.done .name { text-decoration: line-through; text-decoration-thickness: 2px; text-decoration-color: var(--accent); }
+
+  .qty { display: flex; align-items: center; gap: 4px; flex: none; }
+  .qty button, .del {
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    border: none; cursor: pointer;
+    background: #f7eef3; color: var(--text);
+    font-size: 15px; line-height: 1; padding: 0;
+  }
+  .qty button:hover { background: var(--pink); }
+  .qty b { min-width: 30px; text-align: center; font-family: "Jua", sans-serif; font-weight: normal; }
+  .del { background: transparent; color: #d7c3cf; }
+  .del:hover { background: #ffe1e8; color: var(--accent-dark); }
+
+  .bottom { margin-top: 24px; text-align: center; }
+  .bottom .btn { background: #8ccfff; box-shadow: 0 3px 0 #63b4ee; padding: 12px 26px; font-size: 1.1rem; }
+
+  @media (max-width: 640px) {
+    form.add { grid-template-columns: 1fr 80px; }
+    form.add .memo-in { grid-column: 1 / -1; }
+    form.add select { grid-column: 1 / 2; }
+    .sections { grid-template-columns: 1fr; }
+    header h1 { font-size: 1.6rem; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>🛒 우리 집 장보기</h1>
+    <p class="progress-text" id="progressText"></p>
+    <div class="bar"><div id="bar"></div></div>
+  </header>
+
+  <form class="add" id="addForm" autocomplete="off">
+    <input id="inName" placeholder="무엇을 살까요?" required maxlength="40">
+    <input id="inQty" type="number" min="1" max="99" value="1" aria-label="수량">
+    <input id="inMemo" class="memo-in" placeholder="메모 (선택)" maxlength="60">
+    <select id="inCat" aria-label="종류"></select>
+    <button class="btn" type="submit">추가</button>
+  </form>
+
+  <div class="sections" id="sections"></div>
+
+  <div class="bottom">
+    <button class="btn" id="resetBtn" type="button">🔄 다시 장보기</button>
+  </div>
+</div>
+
+<script>
+  const CATEGORIES = [
+    { id: "veg",   label: "🥕 채소·과일",  color: "var(--green)" },
+    { id: "meat",  label: "🍖 고기·생선",  color: "var(--pink)" },
+    { id: "dairy", label: "🥛 유제품·계란", color: "var(--sky)" },
+    { id: "snack", label: "🍞 가공·간식",  color: "var(--yellow)" },
+    { id: "home",  label: "🧻 생활용품",   color: "var(--purple)" },
+    { id: "etc",   label: "🛍️ 기타",       color: "var(--peach)" },
+  ];
+  const KEY = "our-home-shopping-list-v1";
+
+  const SAMPLE = [
+    { name: "우유", qty: 1, memo: "저지방", cat: "dairy" },
+    { name: "계란", qty: 1, memo: "30구", cat: "dairy" },
+    { name: "사과", qty: 3, memo: "", cat: "veg" },
+  ];
+
+  function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+
+  function load() {
+    try {
+      const raw = localStorage.getItem(KEY);
+      if (raw) return JSON.parse(raw);
+    } catch (e) {}
+    return SAMPLE.map(s => ({ ...s, id: uid(), done: false }));
+  }
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify(items)); } catch (e) {}
+  }
+
+  let items = load();
+
+  const $ = id => document.getElementById(id);
+  const sectionsEl = $("sections");
+  const catSelect = $("inCat");
+  CATEGORIES.forEach(c => {
+    const o = document.createElement("option");
+    o.value = c.id; o.textContent = c.label;
+    catSelect.appendChild(o);
+  });
+
+  function render() {
+    sectionsEl.innerHTML = "";
+    CATEGORIES.forEach(cat => {
+      const list = items.filter(i => i.cat === cat.id);
+      const sec = document.createElement("section");
+      sec.className = "section";
+      const doneCount = list.filter(i => i.done).length;
+      sec.innerHTML = `<h2 style="background:${cat.color}">${cat.label}<small>${list.length ? doneCount + " / " + list.length : ""}</small></h2>`;
+      const ul = document.createElement("ul");
+      if (!list.length) {
+        ul.innerHTML = `<li class="empty">아직 살 게 없어요</li>`;
+      }
+      list.forEach(item => ul.appendChild(renderItem(item)));
+      sec.appendChild(ul);
+      sectionsEl.appendChild(sec);
+    });
+
+    const total = items.length;
+    const done = items.filter(i => i.done).length;
+    $("progressText").textContent = total
+      ? (done === total ? `🎉 ${total}개 모두 담았어요!` : `${done} / ${total}개 담았어요`)
+      : "아직 목록이 비어 있어요";
+    $("bar").style.width = total ? (done / total * 100) + "%" : "0";
+  }
+
+  function renderItem(item) {
+    const li = document.createElement("li");
+    li.className = "item" + (item.done ? " done" : "");
+
+    const check = document.createElement("button");
+    check.className = "check";
+    check.type = "button";
+    check.setAttribute("aria-label", item.done ? "체크 해제" : "체크");
+    check.innerHTML = "<span>✓</span>";
+
+    const info = document.createElement("div");
+    info.className = "info";
+    const name = document.createElement("div");
+    name.className = "name";
+    name.textContent = item.name;
+    info.appendChild(name);
+    if (item.memo) {
+      const memo = document.createElement("div");
+      memo.className = "memo";
+      memo.textContent = "📝 " + item.memo;
+      info.appendChild(memo);
+    }
+
+    const toggle = () => { item.done = !item.done; save(); render(); };
+    check.onclick = toggle;
+    info.onclick = toggle;
+
+    const qty = document.createElement("div");
+    qty.className = "qty";
+    const minus = document.createElement("button");
+    minus.type = "button"; minus.textContent = "−"; minus.setAttribute("aria-label", "수량 줄이기");
+    const num = document.createElement("b");
+    num.textContent = "×" + item.qty;
+    const plus = document.createElement("button");
+    plus.type = "button"; plus.textContent = "+"; plus.setAttribute("aria-label", "수량 늘리기");
+    minus.onclick = () => { if (item.qty > 1) { item.qty--; save(); render(); } };
+    plus.onclick = () => { if (item.qty < 99) { item.qty++; save(); render(); } };
+    qty.append(minus, num, plus);
+
+    const del = document.createElement("button");
+    del.className = "del"; del.type = "button"; del.textContent = "✕";
+    del.setAttribute("aria-label", "항목 삭제");
+    del.onclick = () => { items = items.filter(i => i.id !== item.id); save(); render(); };
+
+    li.append(check, info, qty, del);
+    return li;
+  }
+
+  $("addForm").addEventListener("submit", e => {
+    e.preventDefault();
+    const name = $("inName").value.trim();
+    if (!name) return;
+    const qty = Math.min(99, Math.max(1, parseInt($("inQty").value, 10) || 1));
+    items.push({ id: uid(), name, qty, memo: $("inMemo").value.trim(), cat: catSelect.value, done: false });
+    save(); render();
+    $("inName").value = ""; $("inMemo").value = ""; $("inQty").value = 1;
+    $("inName").focus();
+  });
+
+  $("resetBtn").onclick = () => {
+    if (!items.some(i => i.done)) return;
+    if (confirm("체크를 모두 풀까요? 항목은 그대로 남아요.")) {
+      items.forEach(i => i.done = false);
+      save(); render();
+    }
+  };
+
+  render();
+</script>
+</body>
+</html>
